@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temporal Area with Leaflet.js</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+          crossorigin=""/>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        #map {
+            height: 600px;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .controls button {
+            background-color: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .controls button:hover {
+            background-color: #005a8a;
+        }
+        
+        .info-panel {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .temporal-info {
+            background-color: #e8f4f8;
+            border-left: 4px solid #007cba;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Temporal Area Mapping with Leaflet.js</h1>
+    
+    <div id="map"></div>
+    
+    <div class="controls">
+        <button onclick="addRandomPoint()">Add Random Point</button>
+        <button onclick="clearPoints()">Clear Points</button>
+        <button onclick="updateTemporalArea()">Update Temporal Area</button>
+        <button onclick="showAreaInfo()">Show Area Info</button>
+    </div>
+    
+    <div class="info-panel">
+        <div class="temporal-info">
+            <h3>Temporal Area Information</h3>
+            <p id="area-info">Temporal area represents a region of interest during a specific time period.</p>
+            <p><strong>Current Time:</strong> <span id="current-time"></span></p>
+            <p><strong>Points in Area:</strong> <span id="points-count">0</span></p>
+        </div>
+    </div>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+            crossorigin=""></script>
+    
+    <script>
+        // Initialize the map
+        const map = L.map('map').setView([40.7128, -74.0060], 12); // New York City coordinates
+        
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
+        // Define temporal area (polygon)
+        let temporalArea = null;
+        let temporalPoints = [];
+        let pointsLayer = L.layerGroup().addTo(map);
+        
+        // Create initial temporal area
+        function createTemporalArea() {
+            const center = map.getCenter();
+            const bounds = map.getBounds();
+            const latDiff = (bounds.getNorth() - bounds.getSouth()) * 0.3;
+            const lngDiff = (bounds.getEast() - bounds.getWest()) * 0.3;
+            
+            // Create a random polygon area
+            const areaCoords = [
+                [center.lat + latDiff * 0.5, center.lng - lngDiff * 0.5],
+                [center.lat + latDiff * 0.8, center.lng + lngDiff * 0.2],
+                [center.lat + latDiff * 0.2, center.lng + lngDiff * 0.8],
+                [center.lat - latDiff * 0.3, center.lng + lngDiff * 0.5],
+                [center.lat - latDiff * 0.6, center.lng - lngDiff * 0.2],
+                [center.lat - latDiff * 0.1, center.lng - lngDiff * 0.8]
+            ];
+            
+            if (temporalArea) {
+                map.removeLayer(temporalArea);
+            }
+            
+            temporalArea = L.polygon(areaCoords, {
+                color: '#ff6b6b',
+                fillColor: '#ff6b6b',
+                fillOpacity: 0.3,
+                weight: 3,
+                dashArray: '10, 5'
+            }).addTo(map);
+            
+            temporalArea.bindPopup(`
+                <div>
+                    <h4>Temporal Area</h4>
+                    <p><strong>Type:</strong> Dynamic Region</p>
+                    <p><strong>Created:</strong> ${new Date().toLocaleTimeString()}</p>
+                    <p><strong>Status:</strong> Active</p>
+                    <p>This area represents a temporal zone of interest that can change over time.</p>
+                </div>
+            `);
+            
+            return areaCoords;
+        }
+        
+        // Add a point with temporal information
+        function addTemporalPoint(lat, lng, info = {}) {
+            const timestamp = new Date();
+            const pointInfo = {
+                id: Date.now(),
+                lat: lat,
+                lng: lng,
+                timestamp: timestamp,
+                ...info
+            };
+            
+            // Create custom icon for temporal points
+            const customIcon = L.divIcon({
+                className: 'temporal-marker',
+                html: `
+                    <div style="
+                        background-color: #4CAF50;
+                        width: 20px;
+                        height: 20px;
+                        border-radius: 50%;
+                        border: 3px solid white;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                        font-weight: bold;
+                        font-size: 10px;
+                    ">
+                        ${temporalPoints.length + 1}
+                    </div>
+                `,
+                iconSize: [26, 26],
+                iconAnchor: [13, 13]
+            });
+            
+            const marker = L.marker([lat, lng], { icon: customIcon });
+            
+            marker.bindPopup(`
+                <div>
+                    <h4>Temporal Point #${temporalPoints.length + 1}</h4>
+                    <p><strong>Coordinates:</strong> ${lat.toFixed(6)}, ${lng.toFixed(6)}</p>
+                    <p><strong>Timestamp:</strong> ${timestamp.toLocaleString()}</p>
+                    <p><strong>Status:</strong> ${isPointInTemporalArea(lat, lng) ? 'Inside Area' : 'Outside Area'}</p>
+                    <p><strong>Type:</strong> ${info.type || 'Observation Point'}</p>
+                </div>
+            `);
+            
+            pointsLayer.addLayer(marker);
+            temporalPoints.push(pointInfo);
+            updatePointsCount();
+            
+            return marker;
+        }
+        
+        // Check if point is inside temporal area
+        function isPointInTemporalArea(lat, lng) {
+            if (!temporalArea) return false;
+            
+            const point = L.latLng(lat, lng);
+            const polygon = temporalArea.getLatLngs()[0];
+            
+            // Simple point-in-polygon algorithm
+            let inside = false;
+            for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+                if (((polygon[i].lat > point.lat) !== (polygon[j].lat > point.lat)) &&
+                    (point.lng < (polygon[j].lng - polygon[i].lng) * (point.lat - polygon[i].lat) / (polygon[j].lat - polygon[i].lat) + polygon[i].lng)) {
+                    inside = !inside;
+                }
+            }
+            return inside;
+        }
+        
+        // Add random point within or near the temporal area
+        function addRandomPoint() {
+            const bounds = temporalArea ? temporalArea.getBounds() : map.getBounds();
+            const lat = bounds.getSouth() + (bounds.getNorth() - bounds.getSouth()) * Math.random();
+            const lng = bounds.getWest() + (bounds.getEast() - bounds.getWest()) * Math.random();
+            
+            const pointTypes = ['Sensor Reading', 'Observation Point', 'Data Collection', 'Monitoring Station'];
+            const randomType = pointTypes[Math.floor(Math.random() * pointTypes.length)];
+            
+            addTemporalPoint(lat, lng, { type: randomType });
+        }
+        
+        // Clear all points
+        function clearPoints() {
+            pointsLayer.clearLayers();
+            temporalPoints = [];
+            updatePointsCount();
+        }
+        
+        // Update temporal area
+        function updateTemporalArea() {
+            createTemporalArea();
+            updatePointsCount();
+        }
+        
+        // Show area information
+        function showAreaInfo() {
+            if (!temporalArea) {
+                alert('No temporal area defined!');
+                return;
+            }
+            
+            const bounds = temporalArea.getBounds();
+            const area = L.GeometryUtil ? L.GeometryUtil.geodesicArea(temporalArea.getLatLngs()[0]) : 'N/A';
+            const pointsInside = temporalPoints.filter(p => isPointInTemporalArea(p.lat, p.lng)).length;
+            
+            document.getElementById('area-info').innerHTML = `
+                Temporal area bounds: ${bounds.getSouth().toFixed(6)}, ${bounds.getWest().toFixed(6)} to 
+                ${bounds.getNorth().toFixed(6)}, ${bounds.getEast().toFixed(6)}<br>
+                Points inside area: ${pointsInside} of ${temporalPoints.length} total points
+            `;
+        }
+        
+        // Update points count
+        function updatePointsCount() {
+            const pointsInside = temporalPoints.filter(p => isPointInTemporalArea(p.lat, p.lng)).length;
+            document.getElementById('points-count').textContent = `${pointsInside}/${temporalPoints.length}`;
+        }
+        
+        // Update current time
+        function updateTime() {
+            document.getElementById('current-time').textContent = new Date().toLocaleTimeString();
+        }
+        
+        // Map click event to add points
+        map.on('click', function(e) {
+            addTemporalPoint(e.latlng.lat, e.latlng.lng, { type: 'Manual Point' });
+        });
+        
+        // Initialize
+        createTemporalArea();
+        
+        // Add some sample points
+        setTimeout(() => {
+            addRandomPoint();
+            addRandomPoint();
+            addRandomPoint();
+        }, 1000);
+        
+        // Update time every second
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+</body>
+</html> 

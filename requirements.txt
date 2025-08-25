@@ -1,0 +1,22 @@
+# FastAPI and WebSocket dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+websockets==12.0
+
+# AI and ML dependencies
+google-genai==0.3.0
+
+# Audio processing (optional - for future TTS/STT integration)
+pyttsx3==2.90
+SpeechRecognition==3.10.0
+pyaudio==0.2.11
+
+# Utility dependencies
+requests==2.31.0
+python-dotenv==1.0.0
+
+# Legacy Flask dependencies (for backward compatibility)
+Flask==2.3.3
+Flask-CORS==4.0.0
+folium==0.14.0
+

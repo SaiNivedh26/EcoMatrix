@@ -1,0 +1,39 @@
+# EcoMatrix ADK Agent Framework Environment Variables
+# Copy this file to .env and add your actual API keys
+
+# API Keys (Required)
+GEMINI_API_KEY=your_gemini_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Server Configuration
+SERVER_HOST=0.0.0.0
+SERVER_PORT=8000
+DEBUG=false
+
+# Gemini Configuration
+GEMINI_MODEL=gemini-2.0-flash-exp
+
+# Audio Configuration
+SAMPLE_RATE=8000
+BUFFER_SIZE_MS=200
+
+# Voice Activity Detection
+VAD_THRESHOLD=0.5
+PREFIX_PADDING_MS=300
+SILENCE_DURATION_MS=500
+
+# Noise Suppression
+NOISE_THRESHOLD=100
+
+# Agent Configuration
+AGENT_NAME=EcoMatrix Assistant
+COMPANY_NAME=EcoMatrix
+
+# Location Service Configuration (Default NYC coordinates)
+DEFAULT_LAT=40.7128
+DEFAULT_LNG=-74.0060
+BOUNDS_NORTH=40.7228
+BOUNDS_SOUTH=40.7028
+BOUNDS_EAST=-73.9960
+BOUNDS_WEST=-74.0160
+
