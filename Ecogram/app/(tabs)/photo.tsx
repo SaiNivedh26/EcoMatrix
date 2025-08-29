@@ -287,16 +287,16 @@ export default function PhotoScreen() {
     <GreenScreenWrapper>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
+        style={{ flex: 1}}
         keyboardVerticalOffset={80}
       >
         <ScrollView 
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[styles.scrollContent]}
           showsVerticalScrollIndicator={true}
           keyboardShouldPersistTaps="handled"
           bounces={true}
         >
-          <ThemedView style={styles.container}>
+          <ThemedView style={[styles.container, { backgroundColor: 'transparent' }]}> 
             {/* Header */}
             <ThemedView style={styles.header}>
               <ThemedText type="title" style={styles.title}>Report Environmental Issue</ThemedText>
@@ -369,20 +369,22 @@ export default function PhotoScreen() {
                   <ThemedText type="defaultSemiBold" style={styles.inputLabel}>Issue Type</ThemedText>
                 </ThemedView>
                 <TouchableOpacity 
-                  style={[styles.inputBox, selectedIssueType ? styles.activeInput : {}]} 
+                  style={[styles.inputBox, styles.issueTypeBox, selectedIssueType ? styles.activeInput : {}]} 
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     setShowIssueTypes(!showIssueTypes);
                   }}
                 >
-                  <ThemedText style={selectedIssueType ? styles.selectedText : styles.placeholderText}>
+                  <ThemedText style={selectedIssueType ? styles.selectedText : styles.placeholderText} numberOfLines={1}>
                     {selectedIssueType || 'Select issue type'}
                   </ThemedText>
-                  <IconSymbol 
-                    name={showIssueTypes ? "chevron.right" : "chevron.right"} 
-                    size={16} 
-                    color={Colors.light.primary} 
-                  />
+                  <View style={styles.dropdownIconWrapper}>
+                    <IconSymbol 
+                      name={showIssueTypes ? "chevron.right" : "chevron.right"} 
+                      size={16} 
+                      color={Colors.light.primary} 
+                    />
+                  </View>
                 </TouchableOpacity>
                 
                 {showIssueTypes && (
@@ -525,6 +527,18 @@ export default function PhotoScreen() {
 const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
+  issueTypeBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingRight: 8,
+    minWidth: 0,
+  },
+  dropdownIconWrapper: {
+    marginLeft: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   scrollContent: {
     flexGrow: 1,
     paddingBottom: 70,
@@ -546,6 +560,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#666',
     marginBottom: 8,
+    backgroundColor: '#f3fbe8',
   },
   imageSection: {
     marginBottom: 20,
@@ -573,6 +588,7 @@ const styles = StyleSheet.create({
   cameraPlaceholder: {
     alignItems: 'center',
     padding: 16,
+    
   },
   cameraText: {
     marginTop: 12,
@@ -585,6 +601,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
     marginTop: 4,
+    
   },
   changePhotoButton: {
     position: 'absolute',

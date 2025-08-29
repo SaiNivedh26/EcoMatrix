@@ -65,22 +65,26 @@ export default function ExchangeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Add Exchange</Text>
-      <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
-        {image ? (
-          <Image source={{ uri: image }} style={styles.previewImage} />
-        ) : (
-          <Text style={styles.imagePickerText}>Pick an Image</Text>
-        )}
-      </TouchableOpacity>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter description"
-        value={description}
-        onChangeText={setDescription}
-        multiline
-      />
-      <Button title="Add Exchange" onPress={addExchange} />
+      <View style={styles.addExchangeBox}>
+        <Text style={{ ...styles.heading, color: '#388E3C', backgroundColor: '#ffffff', fontSize: 28 }}>Add Exchange</Text>
+        <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+          {image ? (
+            <Image source={{ uri: image }} style={styles.previewImage} />
+          ) : (
+            <Text style={styles.imagePickerText}>Pick an Image</Text>
+          )}
+        </TouchableOpacity>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter description"
+          value={description}
+          onChangeText={setDescription}
+          multiline
+        />
+        <TouchableOpacity style={styles.addButton} onPress={addExchange}>
+          <Text style={styles.addButtonText}>Add Exchange</Text>
+        </TouchableOpacity>
+      </View>
       <Text style={styles.heading}>Exchange List</Text>
       <FlatList
         data={exchanges}
@@ -93,8 +97,31 @@ export default function ExchangeScreen() {
 }
 
 const styles = StyleSheet.create({
+  addExchangeBox: {
+    backgroundColor: '#ffffffff',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#388E3C',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  addButton: {
+    backgroundColor: '#388E3C',
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  addButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
   container: { flex: 1, padding: 16, backgroundColor: '#fff' },
-  heading: { fontSize: 18, fontWeight: 'bold', marginVertical: 12 },
+  heading: { fontSize: 18, fontWeight: 'bold', backgroundColor: '#fff',marginVertical: 12 },
   imagePicker: {
     width: 120, height: 120, borderRadius: 16, backgroundColor: '#f0f0f0',
     justifyContent: 'center', alignItems: 'center', marginBottom: 16, overflow: 'hidden',
@@ -107,7 +134,7 @@ const styles = StyleSheet.create({
   },
   exchangeItem: {
     flexDirection: 'row', alignItems: 'center', padding: 12,
-    borderBottomWidth: 1, borderBottomColor: '#eee', backgroundColor: '#fafafa',
+    borderBottomWidth: 1, borderBottomColor: '#eee', backgroundColor: '#e8f5e9', // light green
     borderRadius: 8, marginBottom: 8,
   },
   exchangeImage: { width: 60, height: 60, borderRadius: 8, marginRight: 12 },

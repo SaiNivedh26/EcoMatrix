@@ -1,16 +1,14 @@
-import { StyleSheet, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
-import { Modal, View, TextInput, Button, Alert } from 'react-native';
-
+import { StyleSheet, TouchableOpacity, Modal, View, TextInput, Button, Alert } from 'react-native';
 import { GreenScreenWrapper } from '@/components/GreenScreenWrapper';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
+import { router } from 'expo-router';
 
-export default function ProfileScreen() {
+export default function VendorProfileScreen() {
   const [modalVisible, setModalVisible] = useState(false);
-  const [name, setName] = useState('Jane Smith');
+  const [name, setName] = useState('Vijay Kumar');
   const [password, setPassword] = useState('');
   const [localPassword, setLocalPassword] = useState('');
 
@@ -23,41 +21,21 @@ export default function ProfileScreen() {
   return (
     <GreenScreenWrapper>
       <ThemedView style={styles.container}>
-        <ThemedView style={styles.header}>
-          <ThemedText type="title" style={styles.headerTitle}>Profile</ThemedText>
-        </ThemedView>
         <ThemedView style={styles.profileHeader}>
           <ThemedText type="title" style={styles.userName}>{name}</ThemedText>
-          <ThemedText style={styles.userStats}>EcoWarrior · 745 Points</ThemedText>
-        </ThemedView>
-        
-        <ThemedView style={styles.statsSection}>
-          <ThemedView style={styles.statBox}>
-            <ThemedText type="defaultSemiBold" style={styles.statValue}>12</ThemedText>
-            <ThemedText style={styles.statLabel}>Reports</ThemedText>
-          </ThemedView>
-          <ThemedView style={styles.statBox}>
-            <ThemedText type="defaultSemiBold" style={styles.statValue}>3</ThemedText>
-            <ThemedText style={styles.statLabel}>Badges</ThemedText>
-          </ThemedView>
-          <ThemedView style={styles.statBox}>
-            <ThemedText type="defaultSemiBold" style={styles.statValue}>5</ThemedText>
-            <ThemedText style={styles.statLabel}>Challenges</ThemedText>
-          </ThemedView>
+          <ThemedText style={styles.userStats}>EcoVendor</ThemedText>
         </ThemedView>
         <ThemedText type="subtitle" style={styles.sectionTitle}>Recent Activity</ThemedText>
         <ThemedView style={styles.activitySection}>
-          <ThemedText style={styles.activityItem}>• Reported litter at Central Park</ThemedText>
-          <ThemedText style={styles.activityItem}>• Completed "Plastic-Free Day" challenge</ThemedText>
-          <ThemedText style={styles.activityItem}>• Earned "EcoWarrior" badge</ThemedText>
+          <ThemedText style={styles.activityItem}>• Exchanged 10kg Plastic</ThemedText>
+          <ThemedText style={styles.activityItem}>• Sold 5kg Iron</ThemedText>
+          <ThemedText style={styles.activityItem}>• Added new item for sale</ThemedText>
         </ThemedView>
         <TouchableOpacity style={styles.settingsButton} onPress={() => setModalVisible(true)}>
           <ThemedText style={styles.settingsButtonText}>Edit</ThemedText>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.switchUserButton} onPress={() => {
-          require('expo-router').router.push('/vendor-login');
-        }}>
-          <ThemedText style={styles.switchUserButtonText}>Switch to Vendor</ThemedText>
+        <TouchableOpacity style={styles.switchUserButton} onPress={() => router.push('/login')}>
+          <ThemedText style={styles.switchUserButtonText}>Switch to User</ThemedText>
         </TouchableOpacity>
         <Modal
           animationType="slide"
@@ -113,7 +91,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     paddingTop: 32,
-    backgroundColor: '#f3fbe8', // very light green shade
+    backgroundColor: '#f3fbe8',
   },
   profileHeader: {
     alignItems: 'center',
@@ -131,79 +109,50 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 4,
   },
-  statsSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 32,
-    backgroundColor: '#e8f5e9',
-    borderRadius: 16,
-    padding: 16,
-  },
-  statBox: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  statLabel: {
-    color: Colors.light.primary,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  statValue: {
-    fontSize: 20,
-    color: '#388E3C',
-    fontWeight: 'bold',
-  },
   sectionTitle: {
     color: Colors.light.primary,
-    marginBottom: 16,
-    fontWeight: 'bold',
     fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
   activitySection: {
-    marginTop: 8,
-    padding: 16,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 16,
-    marginBottom: 16,
+    marginBottom: 24,
+    marginLeft: 8,
   },
   activityItem: {
     color: '#333',
-    marginBottom: 6,
     fontSize: 15,
+    marginBottom: 4,
   },
   settingsButton: {
-    backgroundColor: '#F5F5F5',
-    borderRadius: 8,
-    padding: 16,
-    alignItems: 'center',
-    marginTop: 12,
+    backgroundColor: Colors.light.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 20,
     alignSelf: 'center',
-    marginBottom: 8,
-    width: '60%',
+    marginBottom: 12,
   },
   settingsButtonText: {
-    color: Colors.light.primary,
+    color: 'white',
     fontWeight: 'bold',
     fontSize: 16,
   },
   switchUserButton: {
     backgroundColor: Colors.light.primary,
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 20,
-    marginBottom: 24,
     alignSelf: 'center',
-    width: '60%',
+    marginBottom: 12,
   },
   switchUserButtonText: {
     color: 'white',
     fontWeight: 'bold',
     fontSize: 16,
-    textAlign: 'center',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.3)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -212,18 +161,15 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 24,
     width: '80%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    alignItems: 'center',
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
+    padding: 15,
+    marginBottom: 16,
+    borderRadius: 10,
     fontSize: 16,
+    width: '100%',
   },
 });

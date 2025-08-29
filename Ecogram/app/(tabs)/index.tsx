@@ -1,4 +1,5 @@
 import { StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Image } from 'react-native';
 import { router } from 'expo-router';
 
 import { GreenScreenWrapper } from '@/components/GreenScreenWrapper';
@@ -15,7 +16,14 @@ export default function HomeScreen() {
   return (
     <GreenScreenWrapper>
       <ScrollView style={styles.container}>
-        <ThemedText type="title" style={styles.title}>Welcome...</ThemedText>
+        <View style={styles.welcomeRow}>
+          <ThemedText type="title" style={styles.title}>Welcome...</ThemedText>
+          <Image
+            source={require('@/assets/images/EcoGram_Bharat.png')}
+            style={styles.welcomeImg}
+            resizeMode="contain"
+          />
+        </View>
 
         {/* Environmental Map */}
         <ThemedView style={styles.mapSection}>
@@ -48,6 +56,18 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  welcomeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 16,
+    marginHorizontal: 8,
+  },
+  
+  welcomeImg: {
+    width: 40,
+    height: 40,
+  },
   cuteCol: {
     flexDirection: 'column',
     justifyContent: 'center',
@@ -115,9 +135,7 @@ const styles = StyleSheet.create({
     minWidth: 140,
     maxWidth: 280,
   },
-  mapSection: {
-    marginBottom: 16,
-  },
+  
   card: {
     padding: 16,
     marginBottom: 16,

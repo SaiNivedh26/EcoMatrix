@@ -48,32 +48,20 @@ export default function MapScreen() {
       <ThemedView style={styles.container}>
         <ThemedView style={styles.header}>
           <ThemedText type="title" style={styles.title}>Environmental Reports</ThemedText>
-          <ThemedView style={styles.viewToggle}>
+          <ThemedView style={styles.toggleRow}>
             <TouchableOpacity 
-              style={[
-                styles.toggleButton, 
-                viewMode === 'map' && styles.activeToggle
-              ]}
+              style={[styles.cornerToggleButton, viewMode === 'map' && styles.activeToggle, {alignSelf: 'flex-start'}]}
               onPress={() => setViewMode('map')}
             >
               <IconSymbol name="map.fill" size={18} color={viewMode === 'map' ? 'white' : Colors.light.primary} />
-              <ThemedText style={[
-                styles.toggleText,
-                viewMode === 'map' && styles.activeToggleText
-              ]}>Map</ThemedText>
+              <ThemedText style={[styles.toggleText, viewMode === 'map' && styles.activeToggleText]}>Map</ThemedText>
             </TouchableOpacity>
             <TouchableOpacity 
-              style={[
-                styles.toggleButton, 
-                viewMode === 'list' && styles.activeToggle
-              ]}
+              style={[styles.cornerToggleButton, viewMode === 'list' && styles.activeToggle, {alignSelf: 'flex-end'}]}
               onPress={() => setViewMode('list')}
             >
               <IconSymbol name="list.bullet" size={18} color={viewMode === 'list' ? 'white' : Colors.light.primary} />
-              <ThemedText style={[
-                styles.toggleText,
-                viewMode === 'list' && styles.activeToggleText
-              ]}>List</ThemedText>
+              <ThemedText style={[styles.toggleText, viewMode === 'list' && styles.activeToggleText]}>List</ThemedText>
             </TouchableOpacity>
           </ThemedView>
         </ThemedView>
@@ -139,6 +127,31 @@ export default function MapScreen() {
 const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
+  toggleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  cornerToggleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.light.primary,
+    backgroundColor: 'white',
+    minWidth: 90,
+    marginHorizontal: 4,
+    elevation: 2,
+    shadowColor: '#388E3C',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.10,
+    shadowRadius: 4,
+  },
   container: {
     flex: 1,
   },
@@ -149,6 +162,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#E0E0E0',
   },
   title: {
+    marginTop: 32,
     marginBottom: 16,
     color: Colors.light.primary,
     textAlign: 'center',
