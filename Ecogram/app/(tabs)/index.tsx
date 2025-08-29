@@ -6,7 +6,6 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import EmbeddedMap from '@/components/EmbeddedMap';
 import { Colors } from '@/constants/Colors';
-import { DIYCard } from '@/components/DIYCard';
 
 export default function HomeScreen() {
   const handleViewFullMap = () => {
@@ -22,22 +21,29 @@ export default function HomeScreen() {
         <ThemedView style={styles.mapSection}>
           <EmbeddedMap height={250} onViewFullMap={handleViewFullMap} />
         </ThemedView>
-        <ThemedView style={styles.cuteRow}>
-          <ThemedView style={styles.cuteCard}>
-            <ThemedText type="subtitle" style={styles.cardTitle}>DIY</ThemedText>
-            <ThemedText style={{marginBottom: 8, textAlign: 'center'}}>Upload a picture and get suggestions for your item.</ThemedText>
-            <TouchableOpacity style={styles.button} onPress={() => router.push('/diy')}>
-              <ThemedText style={styles.buttonText}>Go to DIY</ThemedText>
-            </TouchableOpacity>
-          </ThemedView>
+
+        {/* Exchange and DIY boxes stacked vertically */}
+        <ThemedView style={styles.verticalBox}>
           <ThemedView style={styles.cuteCard}>
             <ThemedText type="subtitle" style={styles.cardTitle}>Exchange</ThemedText>
-            <ThemedText style={{marginBottom: 8, textAlign: 'center'}}>Upload an item, add location and description, and share for exchange.</ThemedText>
+            <ThemedText style={{marginBottom: 8, textAlign: 'center'}}>
+              Upload an item, add location and description, and share for exchange.
+            </ThemedText>
             <TouchableOpacity style={styles.button} onPress={() => router.push('/exchange')}>
               <ThemedText style={styles.buttonText}>Go to Exchange</ThemedText>
             </TouchableOpacity>
           </ThemedView>
+          <ThemedView style={styles.cuteCard}>
+            <ThemedText type="subtitle" style={styles.cardTitle}>DIY</ThemedText>
+            <ThemedText style={{marginBottom: 8, textAlign: 'center'}}>
+              Upload a picture and get suggestions for your item.
+            </ThemedText>
+            <TouchableOpacity style={styles.button} onPress={() => router.push('/diy')}>
+              <ThemedText style={styles.buttonText}>Go to DIY</ThemedText>
+            </TouchableOpacity>
+          </ThemedView>
         </ThemedView>
+
         <ThemedText style={styles.footer}>
           Together we can make a difference for our planet!
         </ThemedText>
@@ -47,20 +53,6 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 24,
-    gap: 16,
-  },
-  buttonCol: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
-    minWidth: 120,
-  },
   container: {
     flex: 1,
     padding: 16,
@@ -74,39 +66,30 @@ const styles = StyleSheet.create({
     fontSize: 28,
     letterSpacing: 0.5,
   },
-  cuteRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
+  mapSection: {
+    marginBottom: 16,
+  },
+  verticalBox: {
+    flexDirection: 'column',
+    alignItems: 'center',
     gap: 20,
     marginBottom: 32,
     marginTop: 8,
   },
   cuteCard: {
-    flex: 1,
     backgroundColor: '#e8f5e9',
     borderRadius: 18,
     padding: 20,
-    marginHorizontal: 8,
+    marginVertical: 8,
     alignItems: 'center',
     shadowColor: '#388E3C',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.12,
     shadowRadius: 6,
     elevation: 3,
-    minWidth: 140,
-    maxWidth: 180,
-  },
-  mapSection: {
-    marginBottom: 16,
-  },
-  card: {
-    padding: 16,
-    marginBottom: 16,
-    borderRadius: 8,
-    backgroundColor: '#F5F5F5',
-    borderLeftWidth: 4,
-    borderLeftColor: Colors.light.primary,
+    minWidth: 180,
+    maxWidth: 320,
+    width: '90%',
   },
   cardTitle: {
     color: Colors.light.primary,

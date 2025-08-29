@@ -25,12 +25,9 @@ const currentUserId = 6; // Example: logged-in user
 
 export default function LeaderboardScreen() {
   const topThree = leaderboardData.slice(0, 3);
-  const userIndex = leaderboardData.findIndex((u) => u.id === currentUserId);
-
-  // Show up to 10 users
   const displayUsers = leaderboardData.slice(0, 10);
 
-  const renderUserRow = (item: any, index: number) => {
+  const renderUserRow = ({ item, index }: { item: typeof leaderboardData[0]; index: number }) => {
     const rankNum = index + 4;
     const isCurrentUser = item.id === currentUserId;
     return (
@@ -40,21 +37,19 @@ export default function LeaderboardScreen() {
           isCurrentUser && styles.currentUserHighlight,
         ]}
       >
-        <>
-          <ThemedText type="defaultSemiBold" style={styles.rank}>
-            {rankNum}
-          </ThemedText>
-          <Image
-            source={{
-              uri: 'https://cdn-icons-png.flaticon.com/512/1077/1077012.png',
-            }}
-            style={styles.avatar}
-          />
-          <ThemedText type="defaultSemiBold" style={styles.userName}>{item.name}</ThemedText>
-          <ThemedText type="defaultSemiBold" style={styles.points}>
-            {item.points}
-          </ThemedText>
-        </>
+        <ThemedText type="defaultSemiBold" style={styles.rank}>
+          {rankNum}
+        </ThemedText>
+        <Image
+          source={{
+            uri: 'https://cdn-icons-png.flaticon.com/512/1077/1077012.png',
+          }}
+          style={styles.avatar}
+        />
+        <ThemedText type="defaultSemiBold" style={styles.userName}>{item.name}</ThemedText>
+        <ThemedText type="defaultSemiBold" style={styles.points}>
+          {item.points}
+        </ThemedText>
       </ThemedView>
     );
   };
@@ -62,18 +57,16 @@ export default function LeaderboardScreen() {
   return (
     <GreenScreenWrapper>
       <ThemedView style={styles.container}>
-        {/* Padding above leaderboard */}
         <View style={{ paddingTop: 32 }} />
-        {/* Title */}
         <ThemedText type="title" style={styles.title}>
           Leaderboard
         </ThemedText>
 
-        {/* Top 3 Section - full green background */}
+        {/* Top 3 Section */}
         <View style={styles.topThreeFullGreen}>
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-end' }}>
             {/* 2nd Place */}
-            <View style={[styles.topThreeItem, styles.second, { backgroundColor: '#b7defaff', marginRight: 10, marginLeft: 10 }]}> {/* Small space to right of 2nd */}
+            <View style={[styles.topThreeItem, styles.second, { backgroundColor: '#b7defaff', marginRight: 10, marginLeft: 10 }]}>
               <Image
                 source={{ uri: 'https://cdn-icons-png.flaticon.com/512/1077/1077012.png' }}
                 style={styles.topAvatar}
@@ -83,7 +76,7 @@ export default function LeaderboardScreen() {
               <ThemedText style={styles.topRankNum}>2</ThemedText>
             </View>
 
-            {/* 1st Place - alone, bigger, different color */}
+            {/* 1st Place */}
             <View style={[styles.topThreeItem, styles.first, { backgroundColor: '#FFE0B2', width: 80 }]}>
               <View style={{ position: 'absolute', top: -20 }}>
                 <IconSymbol name="crown.fill" size={32} color="#FFD700" />
@@ -98,7 +91,7 @@ export default function LeaderboardScreen() {
             </View>
 
             {/* 3rd Place */}
-            <View style={[styles.topThreeItem, styles.third, { backgroundColor: '#b7defaff', marginLeft: 10 }]}> {/* No extra space after 3rd */}
+            <View style={[styles.topThreeItem, styles.third, { backgroundColor: '#b7defaff', marginLeft: 10 }]}>
               <Image
                 source={{ uri: 'https://cdn-icons-png.flaticon.com/512/1077/1077012.png' }}
                 style={styles.topAvatar}
@@ -113,7 +106,7 @@ export default function LeaderboardScreen() {
         {/* User and Nearby Ranks */}
         <FlatList
           data={displayUsers.slice(3)}
-          renderItem={({ item, index }) => renderUserRow(item, index)}
+          renderItem={renderUserRow}
           keyExtractor={(_, index) => (index + 4).toString()}
         />
       </ThemedView>
@@ -123,19 +116,10 @@ export default function LeaderboardScreen() {
 
 const styles = StyleSheet.create({
   topThreeFullGreen: {
-    backgroundColor: '#E8F5E9', // light green
-    borderRadius: 20,
-    paddingVertical: 24,
-    paddingHorizontal: 12,
-    marginBottom: 32,
-    marginHorizontal: 8,
-    alignItems: 'center',
-  },
-  topThreeContainer: {
     backgroundColor: '#E8F5E9',
     borderRadius: 20,
     paddingVertical: 24,
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
     marginBottom: 32,
     marginHorizontal: 8,
     alignItems: 'center',
@@ -157,14 +141,6 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
   },
-  // Top 3 styling
-  topThreeWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 32,
-    alignItems: 'flex-end',
-    padding: 20,
-  },
   topThreeItem: {
     alignItems: 'center',
     backgroundColor: '#E8F5E9',
@@ -174,14 +150,12 @@ const styles = StyleSheet.create({
   },
   first: {
     marginBottom: 40,
-    // Remove marginBottom and marginHorizontal
   },
   second: {
-    marginTop: 30, // push 2nd place down
-    
+    marginTop: 30,
   },
   third: {
-    marginTop: 30, // push 3rd place down
+    marginTop: 30,
   },
   topAvatar: {
     width: 50,
@@ -192,7 +166,6 @@ const styles = StyleSheet.create({
     color: '#4CAF50',
     fontSize: 18,
   },
-  // List users styling
   leaderItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -209,7 +182,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   currentUserHighlight: {
-    backgroundColor: '#E3F2FD', // highlight for logged-in user
+    backgroundColor: '#E3F2FD',
   },
   rank: {
     width: 30,
@@ -221,9 +194,6 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     marginHorizontal: 8,
-  },
-  userInfo: {
-    flex: 1,
   },
   points: {
     color: '#4CAF50',
