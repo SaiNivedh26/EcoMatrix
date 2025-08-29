@@ -23,6 +23,10 @@ const MAPPING = {
   'person.fill': 'person',
   'leaf.fill': 'eco',
   'drop.fill': 'water-drop',
+  'photo.fill': 'photo-library',
+  'map.fill': 'map',
+  'list.bullet': 'format-list-bulleted',
+  'plus': 'add',
 } as IconMapping;
 
 /**

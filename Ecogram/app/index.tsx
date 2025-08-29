@@ -11,10 +11,10 @@ export default function LandingPage() {
     <ThemedView style={styles.container}>
       <View style={styles.logoContainer}>
         <Image
-          source={require('@/assets/images/icon.png')}
+          source={require('@/assets/images/EcoGram_Bharat.png')}
           style={styles.logo}
         />
-        <ThemedText type="title" style={styles.appName}>EcoMatrix</ThemedText>
+        <ThemedText type="title" style={styles.appName}>EcoBharat</ThemedText>
       </View>
 
       <ThemedText style={styles.tagline}>

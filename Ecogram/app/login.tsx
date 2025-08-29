@@ -43,7 +43,7 @@ export default function Login() {
           
           <View style={styles.logoContainer}>
             <Image
-              source={require('@/assets/images/icon.png')}
+              source={require('@/assets/images/EcoGram_Bharat.png')}
               style={styles.logo}
             />
           </View>
