@@ -7,7 +7,6 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
-import UserExchanges from '../user-exchanges';
 
 export default function ProfileScreen() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -24,43 +23,39 @@ export default function ProfileScreen() {
   return (
     <GreenScreenWrapper>
       <ThemedView style={styles.container}>
+        <View style={styles.headerSpace} />
         <ThemedView style={styles.profileHeader}>
-          <ThemedView style={styles.avatarContainer}>
-            <IconSymbol name="person.fill" size={60} color="white" />
-          </ThemedView>
-            <ThemedText type="title" style={styles.userName}>{name}</ThemedText>
+          <ThemedText type="title" style={styles.userName}>{name}</ThemedText>
           <ThemedText style={styles.userStats}>EcoWarrior · 745 Points</ThemedText>
         </ThemedView>
         
-        <ThemedView style={styles.statsContainer}>
-          <ThemedView style={styles.statItem}>
+        <ThemedView style={styles.statsSection}>
+          <ThemedView style={styles.statBox}>
             <ThemedText type="defaultSemiBold" style={styles.statValue}>12</ThemedText>
             <ThemedText style={styles.statLabel}>Reports</ThemedText>
           </ThemedView>
-          <ThemedView style={styles.statItem}>
+          <ThemedView style={styles.statBox}>
             <ThemedText type="defaultSemiBold" style={styles.statValue}>3</ThemedText>
             <ThemedText style={styles.statLabel}>Badges</ThemedText>
           </ThemedView>
-          <ThemedView style={styles.statItem}>
+          <ThemedView style={styles.statBox}>
             <ThemedText type="defaultSemiBold" style={styles.statValue}>5</ThemedText>
             <ThemedText style={styles.statLabel}>Challenges</ThemedText>
           </ThemedView>
         </ThemedView>
         <ThemedText type="subtitle" style={styles.sectionTitle}>Recent Activity</ThemedText>
-        <ThemedView style={{backgroundColor: '#F5F5F5', borderRadius: 8, padding: 16, marginBottom: 12}}>
-          <ThemedText style={{color: Colors.light.primary, fontWeight: 'bold', marginBottom: 8}}>• Reported litter at Central Park</ThemedText>
-          <ThemedText style={{color: Colors.light.primary, fontWeight: 'bold', marginBottom: 8}}>• Completed "Plastic-Free Day" challenge</ThemedText>
-          <ThemedText style={{color: Colors.light.primary, fontWeight: 'bold'}}>• Earned "EcoWarrior" badge</ThemedText>
+        <ThemedView style={styles.activitySection}>
+          <ThemedText style={styles.activityItem}>• Reported litter at Central Park</ThemedText>
+          <ThemedText style={styles.activityItem}>• Completed "Plastic-Free Day" challenge</ThemedText>
+          <ThemedText style={styles.activityItem}>• Earned "EcoWarrior" badge</ThemedText>
         </ThemedView>
-        <UserExchanges />
+        <TouchableOpacity style={styles.settingsButton} onPress={() => setModalVisible(true)}>
+          <ThemedText style={styles.settingsButtonText}>Edit</ThemedText>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.switchUserButton} onPress={() => {
-          // Use Expo Router to navigate to vendor login
           require('expo-router').router.push('/vendor-login');
         }}>
           <ThemedText style={styles.switchUserButtonText}>Switch to Vendor</ThemedText>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.settingsButton} onPress={() => setModalVisible(true)}>
-          <ThemedText style={styles.settingsButtonText}>Edit</ThemedText>
         </TouchableOpacity>
         <Modal
           animationType="slide"
@@ -97,14 +92,94 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
+  headerSpace: {
+    height: 16,
+  },
+  container: {
+    flex: 1,
+    padding: 16,
+    paddingTop: 32,
+    backgroundColor: '#fff',
+  },
+  profileHeader: {
+    alignItems: 'center',
+    marginBottom: 32,
+    marginTop: 16,
+  },
+  userName: {
+    color: Colors.light.primary,
+    marginBottom: 4,
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  userStats: {
+    color: '#666',
+    fontSize: 16,
+    marginBottom: 4,
+  },
+  statsSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 32,
+    backgroundColor: '#e8f5e9',
+    borderRadius: 16,
+    padding: 16,
+  },
+  statBox: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  statLabel: {
+    color: Colors.light.primary,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  statValue: {
+    fontSize: 20,
+    color: '#388E3C',
+    fontWeight: 'bold',
+  },
+  sectionTitle: {
+    color: Colors.light.primary,
+    marginBottom: 16,
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  activitySection: {
+    marginTop: 8,
+    padding: 16,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 16,
+    marginBottom: 16,
+  },
+  activityItem: {
+    color: '#333',
+    marginBottom: 6,
+    fontSize: 15,
+  },
+  settingsButton: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 8,
+    padding: 16,
+    alignItems: 'center',
+    marginTop: 12,
+    alignSelf: 'center',
+    marginBottom: 8,
+    width: '60%',
+  },
+  settingsButtonText: {
+    color: Colors.light.primary,
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
   switchUserButton: {
     backgroundColor: Colors.light.primary,
     paddingVertical: 10,
     paddingHorizontal: 24,
     borderRadius: 20,
-    marginBottom: 16,
-    marginTop: 8,
+    marginBottom: 24,
     alignSelf: 'center',
+    width: '60%',
   },
   switchUserButtonText: {
     color: 'white',
@@ -136,73 +211,5 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 12,
     fontSize: 16,
-  },
-  container: {
-    flex: 1,
-    padding: 16,
-    paddingTop: 32,
-  },
-  profileHeader: {
-    alignItems: 'center',
-    marginBottom: 24,
-    marginTop: 32,
-  },
-  avatarContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: Colors.light.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  userName: {
-    color: Colors.light.primary,
-    marginBottom: 4,
-  },
-  userStats: {
-    color: '#666',
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    padding: 16,
-    marginBottom: 24,
-    justifyContent: 'space-around',
-  },
-  statItem: {
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: 24,
-    color: Colors.light.primary,
-  },
-  statLabel: {
-    color: '#666',
-  },
-  sectionTitle: {
-    color: Colors.light.primary,
-    marginBottom: 16,
-  },
-  impactItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F5F5F5',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 12,
-  },
-  impactText: {
-    marginLeft: 12,
-  },
-  settingsButton: {
-    backgroundColor: '#F5F5F5',
-    borderRadius: 8,
-    padding: 16,
-    alignItems: 'center',
-    marginTop: 12,
-  },
-  settingsButtonText: {
-    color: Colors.light.primary,
-    fontWeight: 'bold',
   },
 });

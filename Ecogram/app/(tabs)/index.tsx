@@ -6,7 +6,6 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import EmbeddedMap from '@/components/EmbeddedMap';
 import { Colors } from '@/constants/Colors';
-import { DIYCard } from '@/components/DIYCard';
 
 export default function HomeScreen() {
   const handleViewFullMap = () => {
@@ -39,6 +38,7 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </ThemedView>
         </ThemedView>
+
         <ThemedText style={styles.footer}>
           Together we can make a difference for our planet!
         </ThemedText>
@@ -91,20 +91,21 @@ const styles = StyleSheet.create({
     fontSize: 28,
     letterSpacing: 0.5,
   },
-  cuteRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
+  mapSection: {
+    marginBottom: 16,
+  },
+  verticalBox: {
+    flexDirection: 'column',
+    alignItems: 'center',
     gap: 20,
     marginBottom: 32,
     marginTop: 8,
   },
   cuteCard: {
-    flex: 1,
     backgroundColor: '#e8f5e9',
     borderRadius: 18,
     padding: 20,
-    marginHorizontal: 8,
+    marginVertical: 8,
     alignItems: 'center',
     shadowColor: '#388E3C',
     shadowOffset: { width: 0, height: 2 },
