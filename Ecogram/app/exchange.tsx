@@ -22,7 +22,20 @@ export default function ExchangeScreen() {
   const loadExchanges = async () => {
     try {
       const data = await AsyncStorage.getItem('exchanges');
+      if (data) {
+        setExchanges(JSON.parse(data));
+      }
+    } catch (error) {
+      console.error('Failed to load exchanges:', error);
+    }
+  };
 
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibrary({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      aspect: [4, 3],
+      quality: 1,
+    });
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
       setImage(result.assets[0].uri);
