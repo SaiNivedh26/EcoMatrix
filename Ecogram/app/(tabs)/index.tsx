@@ -39,7 +39,6 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </ThemedView>
         </ThemedView>
-
         <ThemedText style={styles.footer}>
           Together we can make a difference for our planet!
         </ThemedText>

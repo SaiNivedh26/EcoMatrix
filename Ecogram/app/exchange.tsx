@@ -1,199 +1,195 @@
-import React from 'react';
-import { saveExchange, getExchanges, ExchangeItem } from '../services/exchangeStorage';
-import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedText } from '@/components/ThemedText';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, Image, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function ExchangePage() {
-  const [image, setImage] = React.useState<string | null>(null);
-  const [desc, setDesc] = React.useState('');
-  const [location, setLocation] = React.useState({ latitude: 37.78825, longitude: -122.4324 });
-  const [markerSet, setMarkerSet] = React.useState(false);
-  const [submitting, setSubmitting] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState<'form' | 'list'>('form');
-  const [exchanges, setExchanges] = React.useState<ExchangeItem[]>([]);
+interface ExchangeItem {
+  id: string;
+  image: string;
+  description: string;
+}
 
-  const pickImage = async () => {
-    let result = await require('expo-image-picker').launchImageLibraryAsync({
-      mediaTypes: require('expo-image-picker').MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-    }
-  };
-  const handleMapPress = (e: { nativeEvent: { coordinate: { latitude: number; longitude: number } } }) => {
-    setLocation(e.nativeEvent.coordinate);
-    setMarkerSet(true);
-  };
-  const handleSubmit = async () => {
-    if (!image || !desc || !markerSet) return;
-    setSubmitting(true);
-    await saveExchange({
-      id: Date.now().toString(),
-      image,
-      desc,
-      latitude: location.latitude,
-      longitude: location.longitude,
-    });
-    setImage(null);
-    setDesc('');
-    setMarkerSet(false);
-    setSubmitting(false);
-    alert('Exchange submitted!');
-  };
-  const loadExchanges = async () => {
-    const list = await getExchanges();
-    setExchanges(list.reverse()); // Show most recent first
-  };
+export default function ExchangeScreen() {
+  const [tab, setTab] = useState<'add' | 'list'>('add');
+  const [image, setImage] = useState<string | null>(null);
+  const [description, setDescription] = useState('');
+  const [exchanges, setExchanges] = useState<ExchangeItem[]>([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     loadExchanges();
   }, []);
 
+  const loadExchanges = async () => {
+    try {
+      const data = await AsyncStorage.getItem('exchanges');
+
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
+  const handleAddExchange = async () => {
+    if (!image || !description) {
+      Alert.alert('Please select an image and enter a description.');
+      return;
+    }
+    const newExchange: ExchangeItem = {
+      id: Date.now().toString(),
+      image,
+      description,
+    };
+    const updatedExchanges = [newExchange, ...exchanges];
+    setExchanges(updatedExchanges);
+    await AsyncStorage.setItem('exchanges', JSON.stringify(updatedExchanges));
+    setImage(null);
+    setDescription('');
+    setTab('list');
+  };
+
+  const renderExchange = ({ item }: { item: ExchangeItem }) => (
+    <View style={styles.exchangeItem}>
+      <Image source={{ uri: item.image }} style={styles.exchangeImage} />
+      <Text style={styles.exchangeDesc}>{item.description}</Text>
+    </View>
+  );
+
   return (
-    <ThemedView style={styles.container}>
-      <View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 16, gap: 12 }}>
-        <TouchableOpacity style={[styles.uploadBtn, activeTab === 'form' && { backgroundColor: '#388E3C' }]} onPress={() => setActiveTab('form')}>
-          <Text style={styles.uploadText}>Add Exchange</Text>
+    <View style={styles.container}>
+      <View style={styles.tabBar}>
+        <TouchableOpacity
+          style={[styles.tabBtn, tab === 'add' && styles.tabActive]}
+          onPress={() => setTab('add')}
+        >
+          <Text style={tab === 'add' ? styles.tabActiveText : styles.tabText}>Add Exchange</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.uploadBtn, activeTab === 'list' && { backgroundColor: '#388E3C' }]} onPress={() => { setActiveTab('list'); loadExchanges(); }}>
-          <Text style={styles.uploadText}>View List</Text>
+        <TouchableOpacity
+          style={[styles.tabBtn, tab === 'list' && styles.tabActive]}
+          onPress={() => setTab('list')}
+        >
+          <Text style={tab === 'list' ? styles.tabActiveText : styles.tabText}>View List</Text>
         </TouchableOpacity>
       </View>
-      {activeTab === 'form' ? (
-        <>
-          <TouchableOpacity style={styles.uploadBtn} onPress={pickImage}>
-            <Text style={styles.uploadText}>Upload Image</Text>
+      {tab === 'add' && (
+        <View style={styles.form}>
+          <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+            {image ? (
+              <Image source={{ uri: image }} style={styles.previewImage} />
+            ) : (
+              <Text style={styles.imagePickerText}>Pick an Image</Text>
+            )}
           </TouchableOpacity>
-          <TouchableOpacity style={styles.uploadBtn} onPress={async () => {
-            if (!image || !desc || !markerSet) return;
-            await saveExchange({
-              id: Date.now().toString(),
-              image,
-              desc,
-              latitude: location.latitude,
-              longitude: location.longitude,
-            });
-            setImage(null);
-            setDesc('');
-            setMarkerSet(false);
-            await loadExchanges();
-            setActiveTab('list');
-          }}>
-            <Text style={styles.uploadText}>Add Exchange</Text>
-          </TouchableOpacity>
-          {image && (
-            <Image source={{ uri: image }} style={styles.imageSmall} />
-          )}
           <TextInput
             style={styles.input}
-            placeholder="Add a description..."
-            value={desc}
-            onChangeText={setDesc}
+            placeholder="Enter description"
+            value={description}
+            onChangeText={setDescription}
+            multiline
           />
-          <View style={styles.mapContainer}>
-            <MapView
-              style={styles.map}
-              initialRegion={{
-                latitude: location.latitude,
-                longitude: location.longitude,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.01,
-              }}
-              onPress={handleMapPress}
-            >
-              {markerSet && (
-                <Marker coordinate={location} />
-              )}
-            </MapView>
-          </View>
-        </>
-      ) : (
-        <View style={{ width: '100%' }}>
-          <ThemedText type="title" style={styles.title}>Recent Exchanges</ThemedText>
-          {exchanges.length === 0 ? (
-            <ThemedText>No exchanges submitted yet.</ThemedText>
-          ) : (
-            exchanges.map(item => (
-              <View key={item.id} style={{ backgroundColor: '#F5F5F5', borderRadius: 8, padding: 12, marginBottom: 12, alignItems: 'center' }}>
-                {item.image ? (
-                  <Image source={{ uri: item.image }} style={{ width: 80, height: 80, borderRadius: 8, marginBottom: 8 }} />
-                ) : null}
-                <ThemedText style={{ fontWeight: 'bold', marginBottom: 4 }}>{item.desc}</ThemedText>
-                <ThemedText style={{ color: '#388E3C', fontSize: 13 }}>Location: {item.latitude}, {item.longitude}</ThemedText>
-              </View>
-            ))
-          )}
+          <Button title="Add Exchange" onPress={handleAddExchange} />
         </View>
       )}
-    </ThemedView>
+      {tab === 'list' && (
+        <FlatList
+          data={exchanges}
+          keyExtractor={(item) => item.id}
+          renderItem={renderExchange}
+          ListEmptyComponent={<Text style={styles.emptyText}>No exchanges yet.</Text>}
+          contentContainerStyle={styles.listContainer}
+        />
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    paddingTop: 16,
-    paddingHorizontal: 16,
-    paddingBottom: 8,
+    padding: 16,
+    backgroundColor: '#fff',
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
+  tabBar: {
+    flexDirection: 'row',
+    justifyContent: 'center',
     marginBottom: 16,
   },
-  desc: {
-    fontSize: 14,
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  imageSmall: {
-    width: 120,
-    height: 120,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  uploadBtn: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 12,
+  tabBtn: {
+    paddingVertical: 8,
     paddingHorizontal: 24,
     borderRadius: 20,
-    marginBottom: 20,
+    backgroundColor: '#e0e0e0',
+    marginHorizontal: 8,
   },
-  uploadText: {
-    color: 'white',
+  tabActive: {
+    backgroundColor: '#388E3C',
+  },
+  tabText: {
+    color: '#333',
     fontWeight: 'bold',
-    fontSize: 16,
   },
-  image: {
-    width: 200,
-    height: 200,
+  tabActiveText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  form: {
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  imagePicker: {
+    width: 120,
+    height: 120,
     borderRadius: 16,
-    marginBottom: 20,
+    backgroundColor: '#f0f0f0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    overflow: 'hidden',
+  },
+  imagePickerText: {
+    color: '#888',
+  },
+  previewImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 16,
   },
   input: {
-    borderWidth: 1,
+    width: '90%',
+    minHeight: 40,
     borderColor: '#ccc',
+    borderWidth: 1,
     borderRadius: 8,
+    padding: 8,
+    marginBottom: 16,
+    textAlignVertical: 'top',
+  },
+  exchangeItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 12,
-    marginBottom: 12,
-    fontSize: 16,
-    width: '100%',
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    backgroundColor: '#fafafa',
+    borderRadius: 8,
+    marginBottom: 8,
   },
-  mapContainer: {
-    width: '100%',
-    height: 180,
-    borderRadius: 16,
-    overflow: 'hidden',
-    marginBottom: 12,
+  exchangeImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    marginRight: 12,
   },
-  map: {
+  exchangeDesc: {
     flex: 1,
+    color: '#333',
+    fontSize: 16,
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: '#888',
+    marginTop: 32,
+  },
+  listContainer: {
+    paddingBottom: 32,
   },
 });
