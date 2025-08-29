@@ -100,12 +100,12 @@ const EmbeddedMap: React.FC<EmbeddedMapProps> = ({ height = 250, onViewFullMap }
   };
 
   return (
-    <ThemedView style={[styles.container, { height }]}>
-      <ThemedView style={styles.mapHeader}>
-        <ThemedText type="subtitle" style={styles.mapTitle}>Environmental Issues Map</ThemedText>
-        <TouchableOpacity onPress={navigateToFullMap}>
-          <ThemedText style={styles.viewFullMap}>View Full Map</ThemedText>
-        </TouchableOpacity>
+    <ThemedView style={[styles.container, { height }]}> 
+      <ThemedView style={styles.mapHeader}> 
+        <ThemedText type="subtitle" style={styles.mapTitle}>Environmental Issues Map</ThemedText> 
+        <TouchableOpacity style={styles.smallMapButton} onPress={navigateToFullMap}> 
+          <ThemedText style={styles.smallMapButtonText}>View Full Map</ThemedText> 
+        </TouchableOpacity> 
       </ThemedView>
       
       {loading ? (
@@ -155,6 +155,18 @@ const EmbeddedMap: React.FC<EmbeddedMapProps> = ({ height = 250, onViewFullMap }
 };
 
 const styles = StyleSheet.create({
+  smallMapButton: {
+    backgroundColor: Colors.light.primary,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    alignSelf: 'center',
+  },
+  smallMapButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 12,
+  },
   container: {
     borderRadius: 12,
     overflow: 'hidden',
@@ -177,7 +189,7 @@ const styles = StyleSheet.create({
   viewFullMap: {
     color: Colors.light.primary,
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: 12,
   },
   loadingContainer: {
     flex: 1,
