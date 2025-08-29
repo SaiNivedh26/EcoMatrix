@@ -1,12 +1,13 @@
-// app/index.tsx
+import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { useRouter } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { Colors } from "@/constants/Colors";
 
 export default function LandingPage() {
   const router = useRouter();
-
+  const [role, setRole] = useState('user');
   return (
     <ThemedView style={styles.container}>
       <View style={styles.logoContainer}>
@@ -30,14 +31,64 @@ export default function LandingPage() {
         </TouchableOpacity>
       </View>
 
-      <ThemedText style={styles.footer}>
-        © 2025 EcoMatrix Team
-      </ThemedText>
+      <View style={styles.dropdownContainer}>
+        <Text style={styles.dropdownLabel}>Login as:</Text>
+        <View style={styles.dropdownMenu}>
+          <TouchableOpacity
+            style={[styles.dropdownOption, role === 'user' && styles.dropdownSelected]}
+            onPress={() => setRole('user')}
+          >
+            <Text style={styles.dropdownText}>User</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.dropdownOption, role === 'vendor' && styles.dropdownSelected]}
+            onPress={() => {
+              setRole('vendor');
+              router.push('/vendor-login');
+            }}
+          >
+            <Text style={styles.dropdownText}>Vendor</Text>
+          </TouchableOpacity>
+        </View>
+  {/* No continue button, immediate redirect for vendor, user uses Get Started */}
+  </View>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
+  dropdownContainer: {
+    marginTop: 24,
+    alignItems: 'center',
+  },
+  dropdownLabel: {
+    fontSize: 16,
+    marginBottom: 8,
+    color: '#333',
+    fontWeight: 'bold',
+  },
+  dropdownMenu: {
+    flexDirection: 'row',
+    marginBottom: 12,
+    gap: 12,
+  },
+  dropdownOption: {
+    backgroundColor: '#F5F5F5',
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  dropdownSelected: {
+    backgroundColor: Colors.light.primary,
+    borderColor: Colors.light.primary,
+  },
+  dropdownText: {
+    color: '#333',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
   container: {
     flex: 1,
     justifyContent: "center",

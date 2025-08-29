@@ -7,6 +7,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
+import UserExchanges from '../user-exchanges';
 
 export default function ProfileScreen() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -51,6 +52,13 @@ export default function ProfileScreen() {
           <ThemedText style={{color: Colors.light.primary, fontWeight: 'bold', marginBottom: 8}}>• Completed "Plastic-Free Day" challenge</ThemedText>
           <ThemedText style={{color: Colors.light.primary, fontWeight: 'bold'}}>• Earned "EcoWarrior" badge</ThemedText>
         </ThemedView>
+        <UserExchanges />
+        <TouchableOpacity style={styles.switchUserButton} onPress={() => {
+          // Use Expo Router to navigate to vendor login
+          require('expo-router').router.push('/vendor-login');
+        }}>
+          <ThemedText style={styles.switchUserButtonText}>Switch to Vendor</ThemedText>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.settingsButton} onPress={() => setModalVisible(true)}>
           <ThemedText style={styles.settingsButtonText}>Edit</ThemedText>
         </TouchableOpacity>
@@ -89,6 +97,21 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
+  switchUserButton: {
+    backgroundColor: Colors.light.primary,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    borderRadius: 20,
+    marginBottom: 16,
+    marginTop: 8,
+    alignSelf: 'center',
+  },
+  switchUserButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'center',
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
