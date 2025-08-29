@@ -22,8 +22,6 @@ export default function HomeScreen() {
         <ThemedView style={styles.mapSection}>
           <EmbeddedMap height={250} onViewFullMap={handleViewFullMap} />
         </ThemedView>
-<<<<<<< HEAD
-
         <ThemedView style={styles.cuteRow}>
           <ThemedView style={styles.cuteCard}>
             <ThemedText type="subtitle" style={styles.cardTitle}>DIY</ThemedText>
@@ -40,37 +38,6 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </ThemedView>
         </ThemedView>
-
-=======
-        
-        {/* <ThemedView style={styles.card}>
-          <ThemedText type="subtitle" style={styles.cardTitle}>Environmental Impact</ThemedText>
-          <ThemedText>
-            Track your daily activities and see how they impact the environment. Small changes 
-            can make a big difference!
-          </ThemedText>
-        </ThemedView>
-        
-        <ThemedView style={styles.card}>
-          <ThemedText type="subtitle" style={styles.cardTitle}>Community Challenges</ThemedText>
-          <ThemedText>
-            Join community challenges to reduce your carbon footprint and earn points. Compete 
-            with friends and make a positive impact together.
-          </ThemedText>
-        </ThemedView>
-        
-        <ThemedView style={styles.card}>
-          <ThemedText type="subtitle" style={styles.cardTitle}>Eco Tips</ThemedText>
-          <ThemedText>
-            Get daily tips on how to live more sustainably. Learn about recycling, energy 
-            conservation, and eco-friendly products.
-          </ThemedText>
-        </ThemedView> */}
-        
-        {/* DIY Projects Section */}
-        <DIYCard />
-        
->>>>>>> 37cfb92ecfcbd84686b5d683342f34603018544a
         <ThemedText style={styles.footer}>
           Together we can make a difference for our planet!
         </ThemedText>
