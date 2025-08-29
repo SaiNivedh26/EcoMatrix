@@ -50,13 +50,13 @@ export default function SignUp() {
           
           <View style={styles.logoContainer}>
             <Image
-              source={require('@/assets/images/icon.png')}
+              source={require('@/assets/images/EcoGram_Bharat.png')}
               style={styles.logo}
             />
           </View>
           
           <ThemedText type="title" style={styles.title}>Create Account</ThemedText>
-          <ThemedText style={styles.subtitle}>Join EcoMatrix today</ThemedText>
+          <ThemedText style={styles.subtitle}>Join EcoBharat today</ThemedText>
           
           <View style={styles.formContainer}>
             <TextInput

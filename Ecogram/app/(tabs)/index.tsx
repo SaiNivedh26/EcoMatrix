@@ -1,15 +1,26 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
+import { router } from 'expo-router';
 
 import { GreenScreenWrapper } from '@/components/GreenScreenWrapper';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import EmbeddedMap from '@/components/EmbeddedMap';
 import { Colors } from '@/constants/Colors';
 
 export default function HomeScreen() {
+  const handleViewFullMap = () => {
+    router.push('/(tabs)/map');
+  };
+
   return (
     <GreenScreenWrapper>
-      <ThemedView style={styles.container}>
+      <ScrollView style={styles.container}>
         <ThemedText type="title" style={styles.title}>Welcome to EcoMatrix</ThemedText>
+        
+        {/* Environmental Map */}
+        <ThemedView style={styles.mapSection}>
+          <EmbeddedMap height={250} onViewFullMap={handleViewFullMap} />
+        </ThemedView>
         
         <ThemedView style={styles.card}>
           <ThemedText type="subtitle" style={styles.cardTitle}>Environmental Impact</ThemedText>
@@ -38,7 +49,7 @@ export default function HomeScreen() {
         <ThemedText style={styles.footer}>
           Together we can make a difference for our planet!
         </ThemedText>
-      </ThemedView>
+      </ScrollView>
     </GreenScreenWrapper>
   );
 }
@@ -52,6 +63,9 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     color: Colors.light.primary,
     textAlign: 'center',
+  },
+  mapSection: {
+    marginBottom: 16,
   },
   card: {
     padding: 16,
