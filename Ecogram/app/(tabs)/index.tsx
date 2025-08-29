@@ -37,15 +37,6 @@ export default function HomeScreen() {
               <ThemedText style={styles.buttonText}>Go to Exchange</ThemedText>
             </TouchableOpacity>
           </ThemedView>
-          <ThemedView style={styles.cuteCard}>
-            <ThemedText type="subtitle" style={styles.cardTitle}>DIY</ThemedText>
-            <ThemedText style={{marginBottom: 8, textAlign: 'center'}}>
-              Upload a picture and get suggestions for your item.
-            </ThemedText>
-            <TouchableOpacity style={styles.button} onPress={() => router.push('/diy')}>
-              <ThemedText style={styles.buttonText}>Go to DIY</ThemedText>
-            </TouchableOpacity>
-          </ThemedView>
         </ThemedView>
 
         <ThemedText style={styles.footer}>
