@@ -71,6 +71,50 @@
         .spinner-border {
             color: #667eea;
         }
+        .recording-controls {
+            background: #f8f9fa;
+            border: 2px dashed #dc3545;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+        }
+        .recording-controls.recording {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        .record-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: none;
+            font-size: 24px;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        .record-button.start {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+        }
+        .record-button.stop {
+            background: linear-gradient(45deg, #dc3545, #e74c3c);
+            color: white;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .audio-visualizer {
+            width: 100%;
+            height: 60px;
+            background: #333;
+            border-radius: 10px;
+            margin: 10px 0;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -136,8 +180,65 @@
                         <button class="btn btn-primary btn-lg" onclick="findNearbyLocations()">
                             <i class="fas fa-search"></i> Find Nearby
                         </button>
+                        <button class="btn btn-success btn-lg ms-2" onclick="startRealtimeRecording()" id="realtime-record-btn">
+                            <i class="fas fa-microphone"></i> <i class="fas fa-magic"></i> Smart Voice (Live)
+                        </button>
                     </div>
                 </div>
+            </div>
+
+            <!-- Real-time Recording Controls -->
+            <div class="recording-controls" id="recording-controls">
+                <h5><i class="fas fa-microphone"></i> Voice Recording</h5>
+                <p class="text-muted mb-3">Click to start recording your voice message</p>
+                
+                <button class="record-button start" id="record-btn" onclick="toggleRecording()">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                
+                <div class="mt-3">
+                    <p class="mb-1" id="recording-status">Ready to record</p>
+                    <small class="text-muted" id="recording-timer">Duration: 0:00</small>
+                </div>
+                
+                <canvas class="audio-visualizer" id="audio-visualizer" width="400" height="60"></canvas>
+                
+                <div class="mt-3">
+                    <button class="btn btn-outline-secondary btn-sm" onclick="cancelRecording()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button class="btn btn-primary btn-sm" onclick="processRecording()" id="process-btn" style="display: none;">
+                        <i class="fas fa-paper-plane"></i> Process Recording
+                    </button>
+                </div>
+            </div>
+
+            <!-- Speech Processing Section -->
+            <div id="speech-section" style="display: none;">
+                <h4><i class="fas fa-microphone"></i> Speech Processing Results</h4>
+                
+                <!-- Speech Input Info -->
+                <div class="alert alert-info" id="speech-input-info">
+                    <h6><i class="fas fa-ear-listen"></i> What You Said</h6>
+                    <p class="mb-1"><strong>Transcript:</strong> <span id="speech-transcript"></span></p>
+                    <p class="mb-1"><small><strong>Detected Language:</strong> <span id="speech-language"></span> | <strong>Request ID:</strong> <span id="speech-request-id"></span></small></p>
+                    <p class="mb-0"><small class="text-muted">🔄 <strong>Language Flow:</strong> STT → Gemini → TTS (all using <span id="language-flow"></span>)</small></p>
+                </div>
+                
+                <!-- AI Response -->
+                <div class="ai-analysis" id="speech-ai-response">
+                    <h5><i class="fas fa-robot"></i> AI Response</h5>
+                    <div id="speech-ai-content"></div>
+                    <div class="mt-3">
+                        <button class="btn btn-light" onclick="playGeneratedAudio()" id="play-audio-btn" disabled>
+                            <i class="fas fa-play"></i> Play Response
+                        </button>
+                        <small class="text-light ms-2" id="audio-status">Generating audio...</small>
+                    </div>
+                </div>
+                
+                <!-- Audio Player -->
+                <audio id="response-audio" controls style="display: none; width: 100%; margin-top: 10px;"></audio>
             </div>
 
             <!-- Results Section -->
@@ -154,12 +255,22 @@
                 </div>
             </div>
 
-            <!-- Loading -->
+            <!-- Loading States -->
             <div class="loading" id="search-loading">
                 <div class="spinner-border" role="status">
                     <span class="visually-hidden">Searching...</span>
                 </div>
                 <p>Analyzing locations and generating insights...</p>
+            </div>
+            
+            <div class="loading" id="speech-loading">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Processing speech...</span>
+                </div>
+                <div id="speech-loading-text">
+                    <p><i class="fas fa-microphone"></i> Processing your speech...</p>
+                    <small class="text-muted">Please wait while we transcribe, analyze, and generate response</small>
+                </div>
             </div>
         </div>
     </div>
@@ -167,6 +278,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
     <script>
         let currentAnalysis = '';
+        
+        // Real-time recording variables
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let recordingTimer = null;
+        let recordingStartTime = null;
+        let audioContext = null;
+        let analyser = null;
+        let microphone = null;
+        let animationId = null;
 
         // Load map on page load
         window.onload = function() {
@@ -445,6 +566,456 @@
                 console.error('Speech error:', error);
                 alert('Speech failed');
             });
+        }
+
+        function startRealtimeRecording() {
+            // Check if coordinates are available
+            const lat = parseFloat(document.getElementById('user-lat').value);
+            const lng = parseFloat(document.getElementById('user-lng').value);
+            
+            if (isNaN(lat) || isNaN(lng)) {
+                alert('Please enter valid coordinates or use "Random Location" first');
+                return;
+            }
+            
+            // Show recording controls
+            document.getElementById('recording-controls').style.display = 'block';
+            document.getElementById('speech-section').style.display = 'none';
+            document.getElementById('results-section').style.display = 'none';
+            
+            // Scroll to recording controls
+            document.getElementById('recording-controls').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        async function toggleRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                stopRecording();
+            } else {
+                await startRecording();
+            }
+        }
+        
+        async function startRecording() {
+            try {
+                // Request microphone permission
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        sampleRate: 44100
+                    }
+                });
+                
+                // Set up MediaRecorder
+                const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') 
+                    ? 'audio/webm;codecs=opus' 
+                    : 'audio/webm';
+                    
+                mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: mimeType
+                });
+                
+                // Store the stream reference for cleanup
+                mediaRecorder.stream = stream;
+                
+                audioChunks = [];
+                
+                mediaRecorder.ondataavailable = function(event) {
+                    console.log('Data available:', event.data.size, 'bytes');
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.onstop = function() {
+                    console.log('MediaRecorder stopped, processing', audioChunks.length, 'chunks');
+                    const audioBlob = new Blob(audioChunks, { type: mimeType });
+                    console.log('Created audio blob:', audioBlob.size, 'bytes');
+                    handleRecordingComplete(audioBlob);
+                };
+                
+                // Set up audio visualization
+                setupAudioVisualization(stream);
+                
+                // Start recording
+                mediaRecorder.start();
+                recordingStartTime = Date.now();
+                
+                // Update UI
+                updateRecordingUI(true);
+                
+                // Start timer
+                startRecordingTimer();
+                
+            } catch (error) {
+                console.error('Error starting recording:', error);
+                alert('Could not access microphone. Please check permissions.');
+            }
+        }
+        
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                
+                // Stop all tracks from the stream
+                if (mediaRecorder.stream) {
+                    mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                }
+                
+                // Stop audio context and visualization
+                if (audioContext) {
+                    audioContext.close();
+                    audioContext = null;
+                }
+                
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                }
+                
+                // Update UI
+                updateRecordingUI(false);
+                
+                // Stop timer
+                if (recordingTimer) {
+                    clearInterval(recordingTimer);
+                    recordingTimer = null;
+                }
+                
+                console.log('Recording stopped, waiting for processing...');
+            }
+        }
+        
+        function setupAudioVisualization(stream) {
+            // Set up Web Audio API for visualization
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            microphone = audioContext.createMediaStreamSource(stream);
+            
+            analyser.fftSize = 256;
+            microphone.connect(analyser);
+            
+            const canvas = document.getElementById('audio-visualizer');
+            canvas.style.display = 'block';
+            
+            drawVisualization();
+        }
+        
+        function drawVisualization() {
+            const canvas = document.getElementById('audio-visualizer');
+            const canvasCtx = canvas.getContext('2d');
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            
+            function draw() {
+                animationId = requestAnimationFrame(draw);
+                
+                analyser.getByteFrequencyData(dataArray);
+                
+                canvasCtx.fillStyle = '#333';
+                canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                const barWidth = (canvas.width / bufferLength) * 2.5;
+                let barHeight;
+                let x = 0;
+                
+                for (let i = 0; i < bufferLength; i++) {
+                    barHeight = (dataArray[i] / 255) * canvas.height * 0.8;
+                    
+                    const r = barHeight + 25 * (i / bufferLength);
+                    const g = 250 * (i / bufferLength);
+                    const b = 50;
+                    
+                    canvasCtx.fillStyle = `rgb(${r},${g},${b})`;
+                    canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+                    
+                    x += barWidth + 1;
+                }
+            }
+            
+            draw();
+        }
+        
+        function updateRecordingUI(isRecording) {
+            const recordBtn = document.getElementById('record-btn');
+            const recordingControls = document.getElementById('recording-controls');
+            const status = document.getElementById('recording-status');
+            const processBtn = document.getElementById('process-btn');
+            
+            if (isRecording) {
+                recordBtn.className = 'record-button stop';
+                recordBtn.innerHTML = '<i class="fas fa-stop"></i>';
+                recordingControls.classList.add('recording');
+                status.textContent = '🔴 Recording... Click to stop and process';
+                processBtn.disabled = true;
+                processBtn.style.display = 'none'; // Hide manual process button
+            } else {
+                recordBtn.className = 'record-button start';
+                recordBtn.innerHTML = '<i class="fas fa-check"></i>';
+                recordingControls.classList.remove('recording');
+                status.textContent = '✅ Recording stopped, processing...';
+                processBtn.disabled = true;
+                processBtn.style.display = 'none'; // Keep hidden since auto-processing
+                
+                // Hide visualizer
+                document.getElementById('audio-visualizer').style.display = 'none';
+            }
+        }
+        
+        function startRecordingTimer() {
+            recordingTimer = setInterval(() => {
+                const elapsed = Date.now() - recordingStartTime;
+                const seconds = Math.floor(elapsed / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                
+                document.getElementById('recording-timer').textContent = 
+                    `Duration: ${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+        
+        function handleRecordingComplete(audioBlob) {
+            // Store the recorded audio for processing
+            window.recordedAudio = audioBlob;
+            console.log('Recording complete, blob size:', audioBlob.size);
+            
+            // Show processing status
+            document.getElementById('recording-status').textContent = '🎵 Processing your recording...';
+            
+            // Automatically process the recording
+            setTimeout(() => {
+                processRecording();
+            }, 500); // Small delay to show the status update
+        }
+        
+        function cancelRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                // Stop recording without processing
+                if (mediaRecorder.stream) {
+                    mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                }
+                
+                if (audioContext) {
+                    audioContext.close();
+                    audioContext = null;
+                }
+                
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                }
+                
+                if (recordingTimer) {
+                    clearInterval(recordingTimer);
+                    recordingTimer = null;
+                }
+                
+                mediaRecorder = null;
+            }
+            
+            // Hide recording controls
+            document.getElementById('recording-controls').style.display = 'none';
+            
+            // Clean up
+            audioChunks = [];
+            window.recordedAudio = null;
+            
+            console.log('Recording cancelled');
+        }
+        
+        function processRecording() {
+            if (!window.recordedAudio) {
+                alert('No recording available. Please record your voice first.');
+                return;
+            }
+            
+            const lat = parseFloat(document.getElementById('user-lat').value);
+            const lng = parseFloat(document.getElementById('user-lng').value);
+            
+            // Hide recording controls
+            document.getElementById('recording-controls').style.display = 'none';
+            
+            // Process the recorded audio
+            processSpeechWithLocation(window.recordedAudio, lat, lng);
+        }
+
+        function startSpeechWithLocation() {
+            // Check if coordinates are available
+            const lat = parseFloat(document.getElementById('user-lat').value);
+            const lng = parseFloat(document.getElementById('user-lng').value);
+            
+            if (isNaN(lat) || isNaN(lng)) {
+                alert('Please enter valid coordinates or use "Random Location" first');
+                return;
+            }
+            
+            // Create file input for audio upload (fallback method)
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'audio/*';
+            fileInput.style.display = 'none';
+            
+            fileInput.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    processSpeechWithLocation(file, lat, lng);
+                }
+            };
+            
+            document.body.appendChild(fileInput);
+            fileInput.click();
+            document.body.removeChild(fileInput);
+        }
+        
+        function processSpeechWithLocation(audioFile, lat, lng) {
+            console.log('Processing speech with location:', { audioFile, lat, lng });
+            console.log('Audio file type:', audioFile.constructor.name, 'Size:', audioFile.size);
+            
+            // Show loading
+            document.getElementById('speech-loading').style.display = 'block';
+            document.getElementById('speech-section').style.display = 'none';
+            document.getElementById('results-section').style.display = 'none';
+            
+            // Update loading text with progress
+            updateSpeechLoadingText('🎤 Uploading audio file...');
+            
+            // Create FormData for file upload
+            const formData = new FormData();
+            
+            // Handle both File objects and Blob objects
+            if (audioFile instanceof Blob) {
+                // For recorded audio (Blob), create a File object with proper name
+                const audioFileWithName = new File([audioFile], 'recording.webm', { 
+                    type: audioFile.type || 'audio/webm' 
+                });
+                formData.append('audio', audioFileWithName);
+                console.log('Appended Blob as File:', audioFileWithName.name, audioFileWithName.type);
+            } else {
+                // For uploaded files
+                formData.append('audio', audioFile);
+                console.log('Appended File:', audioFile.name, audioFile.type);
+            }
+            
+            formData.append('lat', lat);
+            formData.append('lng', lng);
+            formData.append('speaker', 'vidya');
+            
+            fetch('/api/speech-with-location', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                updateSpeechLoadingText('📝 Processing speech-to-text...');
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    updateSpeechLoadingText('🤖 Generating AI response...');
+                    setTimeout(() => {
+                        updateSpeechLoadingText('🔊 Creating audio response...');
+                        setTimeout(() => displaySpeechResults(data), 1000);
+                    }, 1000);
+                } else {
+                    throw new Error(data.error || 'Speech processing failed');
+                }
+            })
+            .catch(error => {
+                console.error('Speech processing error:', error);
+                alert('Speech processing failed: ' + error.message);
+            })
+            .finally(() => {
+                document.getElementById('speech-loading').style.display = 'none';
+            });
+        }
+        
+        function updateSpeechLoadingText(text) {
+            const loadingTextElement = document.getElementById('speech-loading-text');
+            if (loadingTextElement) {
+                loadingTextElement.innerHTML = `
+                    <p>${text}</p>
+                    <small class="text-muted">Please wait while we process your request...</small>
+                `;
+            }
+        }
+        
+        function displaySpeechResults(data) {
+            // Show speech section
+            document.getElementById('speech-section').style.display = 'block';
+            
+            // Display speech-to-text results
+            document.getElementById('speech-transcript').textContent = data.stt_result.transcript;
+            document.getElementById('speech-language').textContent = data.stt_result.language_code;
+            document.getElementById('speech-request-id').textContent = data.stt_result.request_id;
+            document.getElementById('language-flow').textContent = data.stt_result.language_code;
+            
+            // Display AI response
+            document.getElementById('speech-ai-content').innerHTML = data.gemini_response.replace(/\n/g, '<br>');
+            
+            // Set up audio playback
+            const audioUrl = data.audio_url;
+            const audioElement = document.getElementById('response-audio');
+            const playButton = document.getElementById('play-audio-btn');
+            const audioStatus = document.getElementById('audio-status');
+            
+            if (audioUrl && data.tts_result.filename) {
+                audioElement.src = audioUrl;
+                audioElement.style.display = 'block';
+                playButton.disabled = false;
+                audioStatus.textContent = 'Audio ready!';
+                audioStatus.className = 'text-success ms-2';
+                
+                // Auto-play the response (optional)
+                setTimeout(() => {
+                    playGeneratedAudio();
+                }, 500);
+            } else {
+                audioStatus.textContent = 'Audio generation failed';
+                audioStatus.className = 'text-danger ms-2';
+            }
+            
+            // Show location context if available
+            if (data.location_context && data.location_context.nearest_locations.length > 0) {
+                displayNearbyLocationsInSpeech(data.location_context.nearest_locations);
+            }
+            
+            console.log('Speech processing complete:', data);
+        }
+        
+        function displayNearbyLocationsInSpeech(locations) {
+            // Create a small locations display within the speech section
+            const speechSection = document.getElementById('speech-section');
+            
+            let locationsHtml = '<div class="mt-3"><h6><i class="fas fa-map-marker-alt"></i> Nearby Locations Used:</h6>';
+            locations.forEach((location, index) => {
+                locationsHtml += `
+                    <small class="d-block text-muted">
+                        ${index + 1}. ${location.name} (${location.distance}km) - ${location.description}
+                    </small>
+                `;
+            });
+            locationsHtml += '</div>';
+            
+            speechSection.innerHTML += locationsHtml;
+        }
+        
+        function playGeneratedAudio() {
+            const audioElement = document.getElementById('response-audio');
+            const playButton = document.getElementById('play-audio-btn');
+            
+            if (audioElement && audioElement.src) {
+                audioElement.play()
+                    .then(() => {
+                        playButton.innerHTML = '<i class="fas fa-pause"></i> Playing...';
+                        
+                        audioElement.onended = function() {
+                            playButton.innerHTML = '<i class="fas fa-play"></i> Play Again';
+                        };
+                    })
+                    .catch(error => {
+                        console.error('Audio playback error:', error);
+                        alert('Audio playback failed');
+                    });
+            }
         }
 
         function testServer() {
