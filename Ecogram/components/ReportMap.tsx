@@ -152,8 +152,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   map: {
-    width,
-    height,
+    ...StyleSheet.absoluteFillObject,
   },
   calloutContainer: {
     width: 200,

@@ -6,6 +6,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import EmbeddedMap from '@/components/EmbeddedMap';
 import { Colors } from '@/constants/Colors';
+import { DIYCard } from '@/components/DIYCard';
 
 export default function HomeScreen() {
   const handleViewFullMap = () => {
@@ -22,7 +23,7 @@ export default function HomeScreen() {
           <EmbeddedMap height={250} onViewFullMap={handleViewFullMap} />
         </ThemedView>
         
-        <ThemedView style={styles.card}>
+        {/* <ThemedView style={styles.card}>
           <ThemedText type="subtitle" style={styles.cardTitle}>Environmental Impact</ThemedText>
           <ThemedText>
             Track your daily activities and see how they impact the environment. Small changes 
@@ -44,7 +45,10 @@ export default function HomeScreen() {
             Get daily tips on how to live more sustainably. Learn about recycling, energy 
             conservation, and eco-friendly products.
           </ThemedText>
-        </ThemedView>
+        </ThemedView> */}
+        
+        {/* DIY Projects Section */}
+        <DIYCard />
         
         <ThemedText style={styles.footer}>
           Together we can make a difference for our planet!
@@ -60,6 +64,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   title: {
+    marginTop: 32,
     marginBottom: 24,
     color: Colors.light.primary,
     textAlign: 'center',
