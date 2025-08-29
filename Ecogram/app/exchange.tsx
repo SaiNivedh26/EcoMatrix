@@ -69,23 +69,6 @@ export default function ExchangePage() {
           <TouchableOpacity style={styles.uploadBtn} onPress={pickImage}>
             <Text style={styles.uploadText}>Upload Image</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.uploadBtn} onPress={async () => {
-            if (!image || !desc || !markerSet) return;
-            await saveExchange({
-              id: Date.now().toString(),
-              image,
-              desc,
-              latitude: location.latitude,
-              longitude: location.longitude,
-            });
-            setImage(null);
-            setDesc('');
-            setMarkerSet(false);
-            await loadExchanges();
-            setActiveTab('list');
-          }}>
-            <Text style={styles.uploadText}>Add Exchange</Text>
-          </TouchableOpacity>
           {image && (
             <Image source={{ uri: image }} style={styles.imageSmall} />
           )}
@@ -111,6 +94,23 @@ export default function ExchangePage() {
               )}
             </MapView>
           </View>
+          <TouchableOpacity style={styles.uploadBtn} onPress={async () => {
+            if (!image || !desc || !markerSet) return;
+            await saveExchange({
+              id: Date.now().toString(),
+              image,
+              desc,
+              latitude: location.latitude,
+              longitude: location.longitude,
+            });
+            setImage(null);
+            setDesc('');
+            setMarkerSet(false);
+            await loadExchanges();
+            setActiveTab('list');
+          }}>
+            <Text style={styles.uploadText}>Add Exchange</Text>
+          </TouchableOpacity>
         </>
       ) : (
         <View style={{ width: '100%' }}>
