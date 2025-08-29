@@ -5,13 +5,8 @@ import asyncio
 import sys
 import logging
 import time
-import os
 from typing import List, Dict, Any, Optional
 import aiohttp
-
-# Disable Playwright before any imports
-os.environ['CRAWL4AI_DISABLE_PLAYWRIGHT'] = '1'
-os.environ['PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD'] = '1'
 
 # Fix for Windows async subprocess issues with Playwright/Crawl4AI
 if sys.platform.startswith("win"):
@@ -262,11 +257,11 @@ class WebSearchService:
             logger.info(f"🕷️ Starting Crawl4AI scraping for {len(urls)} URLs")
             
             try:
-                # Configure browser with explicit engine selection to avoid Playwright
+                # Configure browser properly
                 browser_config = BrowserConfig(
                     headless=True,
-                    browser_type="chromium",  # Force chromium instead of playwright
-                    verbose=False
+                    verbose=True,
+                    use_playwright=False  # Avoid Playwright subprocess issues
                 )
                 
                 # Configure crawl run settings
