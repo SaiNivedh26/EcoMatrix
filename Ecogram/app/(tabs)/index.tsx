@@ -22,7 +22,7 @@ export default function HomeScreen() {
         <ThemedView style={styles.mapSection}>
           <EmbeddedMap height={250} onViewFullMap={handleViewFullMap} />
         </ThemedView>
-<<<<<<< HEAD
+
 
         <ThemedView style={styles.cuteRow}>
           <ThemedView style={styles.cuteCard}>
@@ -41,7 +41,6 @@ export default function HomeScreen() {
           </ThemedView>
         </ThemedView>
 
-=======
         
         {/* <ThemedView style={styles.card}>
           <ThemedText type="subtitle" style={styles.cardTitle}>Environmental Impact</ThemedText>
@@ -70,7 +69,6 @@ export default function HomeScreen() {
         {/* DIY Projects Section */}
         <DIYCard />
         
->>>>>>> 37cfb92ecfcbd84686b5d683342f34603018544a
         <ThemedText style={styles.footer}>
           Together we can make a difference for our planet!
         </ThemedText>
