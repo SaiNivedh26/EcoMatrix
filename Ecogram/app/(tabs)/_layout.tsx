@@ -6,15 +6,13 @@ import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: Colors.light.primary, // Use primary green color for active tabs
+        tabBarInactiveTintColor: Colors.light.tabIconDefault, // Use light green for inactive tabs
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
@@ -22,8 +20,11 @@ export default function TabLayout() {
           ios: {
             // Use a transparent background on iOS to show the blur effect
             position: 'absolute',
+            backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent white
           },
-          default: {},
+          default: {
+            backgroundColor: Colors.light.background, // White background for other platforms
+          },
         }),
       }}>
       <Tabs.Screen

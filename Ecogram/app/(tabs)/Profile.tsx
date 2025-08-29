@@ -1,75 +1,131 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { GreenScreenWrapper } from '@/components/GreenScreenWrapper';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Colors } from '@/constants/Colors';
 
-export default function HomeScreen() {
+export default function ProfileScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
+    <GreenScreenWrapper>
+      <ThemedView style={styles.container}>
+        <ThemedView style={styles.profileHeader}>
+          <ThemedView style={styles.avatarContainer}>
+            <IconSymbol name="person.fill" size={60} color="white" />
+          </ThemedView>
+          <ThemedText type="title" style={styles.userName}>Jane Smith</ThemedText>
+          <ThemedText style={styles.userStats}>EcoWarrior · 745 Points</ThemedText>
+        </ThemedView>
+        
+        <ThemedView style={styles.statsContainer}>
+          <ThemedView style={styles.statItem}>
+            <ThemedText type="defaultSemiBold" style={styles.statValue}>12</ThemedText>
+            <ThemedText style={styles.statLabel}>Reports</ThemedText>
+          </ThemedView>
+          <ThemedView style={styles.statItem}>
+            <ThemedText type="defaultSemiBold" style={styles.statValue}>3</ThemedText>
+            <ThemedText style={styles.statLabel}>Badges</ThemedText>
+          </ThemedView>
+          <ThemedView style={styles.statItem}>
+            <ThemedText type="defaultSemiBold" style={styles.statValue}>5</ThemedText>
+            <ThemedText style={styles.statLabel}>Challenges</ThemedText>
+          </ThemedView>
+        </ThemedView>
+        
+        <ThemedText type="subtitle" style={styles.sectionTitle}>Your Impact</ThemedText>
+        
+        <ThemedView style={styles.impactItem}>
+          <IconSymbol name="leaf.fill" size={24} color={Colors.light.primary} />
+          <ThemedView style={styles.impactText}>
+            <ThemedText type="defaultSemiBold">Carbon Saved</ThemedText>
+            <ThemedText>120kg CO2 equivalent</ThemedText>
+          </ThemedView>
+        </ThemedView>
+        
+        <ThemedView style={styles.impactItem}>
+          <IconSymbol name="drop.fill" size={24} color={Colors.light.primary} />
+          <ThemedView style={styles.impactText}>
+            <ThemedText type="defaultSemiBold">Water Saved</ThemedText>
+            <ThemedText>450 liters</ThemedText>
+          </ThemedView>
+        </ThemedView>
+        
+        <TouchableOpacity style={styles.settingsButton}>
+          <ThemedText style={styles.settingsButtonText}>Settings</ThemedText>
+        </TouchableOpacity>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    </GreenScreenWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  profileHeader: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  avatarContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: Colors.light.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  userName: {
+    color: Colors.light.primary,
+    marginBottom: 4,
+  },
+  userStats: {
+    color: '#666',
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#F5F5F5',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 24,
+    justifyContent: 'space-around',
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 24,
+    color: Colors.light.primary,
+  },
+  statLabel: {
+    color: '#666',
+  },
+  sectionTitle: {
+    color: Colors.light.primary,
+    marginBottom: 16,
+  },
+  impactItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    backgroundColor: '#F5F5F5',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 12,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  impactText: {
+    marginLeft: 12,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  settingsButton: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 8,
+    padding: 16,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  settingsButtonText: {
+    color: Colors.light.primary,
+    fontWeight: 'bold',
   },
 });

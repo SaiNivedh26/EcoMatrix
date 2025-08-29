@@ -1,21 +1,8 @@
-import { useEffect, useState } from 'react';
-import { useColorScheme as useRNColorScheme } from 'react-native';
-
 /**
- * To support static rendering, this value needs to be re-calculated on the client side for web
+ * Custom hook that always returns 'light' for the EcoMatrix green and white theme
+ * This is the web version, but behavior is the same as the native version
  */
-export function useColorScheme() {
-  const [hasHydrated, setHasHydrated] = useState(false);
-
-  useEffect(() => {
-    setHasHydrated(true);
-  }, []);
-
-  const colorScheme = useRNColorScheme();
-
-  if (hasHydrated) {
-    return colorScheme;
-  }
-
+export function useColorScheme(): 'light' {
+  // Always return 'light' regardless of system theme
   return 'light';
 }
