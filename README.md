@@ -60,13 +60,16 @@ EcoGram Bharat is configured for rural India but can be adapted to any location 
 ## Troubleshooting
 ### Encountering issues? Here's how to resolve common ones:
 
-- Voice Agent Problems: Verify Twilio setup and Sarvam.ai API keys; ensure language support is configured.
-- AI Identification Errors: Check image quality and Gemini/Hugging Face API keys in .env.
-- Map Not Loading: Confirm Google Maps API key and internet connectivity.
-- Database Issues: Ensure MongoDB connection strings are correct.
+[!TIPS]
+> Voice Agent Problems: Verify Twilio setup and Sarvam.ai API keys; ensure language support is configured.
+> AI Identification Errors: Check image quality and Gemini/Hugging Face API keys in .env.
+> Map Not Loading: Confirm Google Maps API key and internet connectivity.
+> Database Issues: Ensure MongoDB connection strings are correct.
 
 ## Status
-Code cleaning and testing are in progress to refine performance and ensure reliability.
+
+[!NOTE]
+> Code cleaning and testing are in progress to refine performance and ensure reliability.
 
 
 ## 👥 Contributors
