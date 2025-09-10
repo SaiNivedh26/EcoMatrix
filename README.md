@@ -3,6 +3,8 @@
 <img width="512" height="128" alt="image" src="https://github.com/user-attachments/assets/30429389-c6a2-4a6b-9a01-d945a5c0c8d8" />
 
 
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+
 - EcoGram Bharat is an innovative platform developed by Team EcoMatrix for the ICSRF 2025 Hackathon final round.
 - Designed to tackle rural waste management challenges in India, it transforms waste into valuable resources through AI-driven insights, community sharing, and gamification. Like a community hub that turns trash into treasure—similar to how apps like OLX connect buyers and sellers but tailored for sustainability—EcoGram Bharat empowers users to identify, reuse, and share materials effortlessly.
 - While focused on rural areas, the system is adaptable for urban settings, making it versatile for any city or village.
@@ -66,9 +68,6 @@ EcoGram Bharat is configured for rural India but can be adapted to any location 
 ## Status
 Code cleaning and testing are in progress to refine performance and ensure reliability.
 
-License
-EcoGram Bharat is licensed under the MIT License. Feel free to use, modify, or contribute.
-
 
 ## 👥 Contributors
 
@@ -80,4 +79,10 @@ Thanks to all the amazing people who contributed to this project 💚
 - [Thrishala](https://github.com/thrishalasivakumar)  
 - [Mokitha](https://github.com/Mokitha-Sakthi)  
 - [Hygrevan](https://github.com/Hygrevan-343)
+
+
+## Feedback
+
+If you have any feedback, please reach out to us at nivedh@cc.cc
+
 
